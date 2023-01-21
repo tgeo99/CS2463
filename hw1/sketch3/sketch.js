@@ -30,4 +30,5 @@ function draw() {
   fill(70,70,255);
   circle(130,50,15);
   circle(170,50,15);
+  pop();
 }

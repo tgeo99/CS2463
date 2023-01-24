@@ -1,7 +1,7 @@
 function setup() {
   createCanvas(600, 600);
   background(255);
-  //button
+  //buttons
   push();
   noStroke();
   fill("red");
@@ -42,7 +42,7 @@ function draw() {
 
 function mousePressed(){
   if(mouseX < 20 && mouseY < button_area){
-    //pick color
+    //pick color - button functionality
     if(mouseY < 20){
       stroke("red");
     }

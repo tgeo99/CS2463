@@ -28,12 +28,12 @@ function setup() {
   strokeWeight(5);
 }
 
-const button_area = 200;
+const BUTTON_AREA = 200;
 var prev_x = 20;
 var prev_y = 220;
 
 function draw() {
-  if(mouseIsPressed && !(mouseX < 20 && mouseY < button_area)&& !(prev_x < 20 && prev_y < button_area)){
+  if(mouseIsPressed && !(mouseX < 20 && mouseY < BUTTON_AREA)&& !(prev_x < 20 && prev_y < BUTTON_AREA)){
     line(prev_x, prev_y, mouseX, mouseY);
   }
   prev_x = mouseX;
@@ -41,7 +41,7 @@ function draw() {
 }
 
 function mousePressed(){
-  if(mouseX < 20 && mouseY < button_area){
+  if(mouseX < 20 && mouseY < BUTTON_AREA){
     //pick color - button functionality
     if(mouseY < 20){
       stroke("red");

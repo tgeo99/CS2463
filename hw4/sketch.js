@@ -6,6 +6,13 @@ function preload(){
 let bugIdle, bugWalk, bugSplat;
 let bugs = [];
 let arrayEx = [];
+let gameState;
+let bugRate;
+let hiscore;
+let bugMiss;
+let timer;
+let newhiscore;
+let first;
 function setup(){
   frameRate(60);
   createCanvas(600,400);
@@ -13,67 +20,177 @@ function setup(){
   bugIdle = new Anim(img1, 1, 2, 16, 16, 0, 0);
   bugWalk = new Anim(img1, 4, 2, 16, 16, 0, 0);
   bugSplat = new Anim(img1, 1, 2, 16, 16, 0, 16);
-  console.log("splice test");
-  arrayEx.push("red");
-  arrayEx.push("orange");
-  arrayEx.push("yellow");
-  console.log(arrayEx);
-  arrayEx.splice(2,1);
-  console.log(arrayEx);
+  gameState = "TITLE";
+  //console.log(gameState);
   splatCount = 0;
+  hiscore = 0;
+  bugRate = 100;
+  bugMiss = 0;
+  timer = 31;
+  first = true;
 }
 
 function draw(){
-  background(240);
+  switch(gameState){
+    case "GAME":
+      game();
+      break;
+    case "TITLE":
+      title();
+      break;
+    case "GAMEOVER":
+      gameover();
+      break;
+  }
+}
 
+function gameover(){
+  if(first === true){
+    if(hiscore < splatCount){
+      hiscore = splatCount;
+      newhiscore = true;
+    }
+    else{
+      newhiscore = false;
+    }
+    //reset
+    bugs = [];
+    splatCount = 0;
+    bugRate = 100;
+    bugMiss = 0;
+    timer = 31;
+    first = false;
+  }
+  background(237,93,93);
+  push();
+  textSize(36);
+  textAlign(CENTER);
+  text("GAME OVER", 300, 200);
+  textSize(16);
+  //rect(200,280,200,32);
+  text("Click here to continue...", 300, 300);
+  textSize(20);
+  textAlign(CENTER);
+  text("Hi Score: "+hiscore, 300, 24);
+  pop();
+  //flashing high score message
+  if(newhiscore === true){
+    if(frameCount % 75 < 40){
+      push()
+      textAlign(CENTER);
+      text("!! NEW HIGH SCORE !!", 300,250);
+      pop()
+    }
+  }
+}
+
+function title(){
+  //UI TEXT
+  background(240);
+  push();
+  textSize(36);
+  textAlign(CENTER);
+  text("BUG SPLAT!", 300, 200);
+  textSize(16);
+  text("Click to play!", 300, 250);
+  textSize(20);
+  textAlign(CENTER);
+  text("Hi Score: "+hiscore, 300, 24);
+  pop();
+}
+
+
+function game(){
+  background(240);
+  rect(0,0,600,32);
   //BUG CREATOR
-  if(frameCount % 60 == 0){
+  if(frameCount % Math.floor(bugRate) == 0){
     if(random(0,1) < .5){
-      newBug = new WalkingController(bugSplat, bugWalk, -16,random(16, 384));
+      newBug = new WalkingController(bugSplat, bugWalk, -16,random(48, 384));
       newBug.moving = 1;
     }
     else{
-      newBug = new WalkingController(bugSplat, bugWalk, 616,random(16, 384));
+      newBug = new WalkingController(bugSplat, bugWalk, 616,random(48, 384));
       newBug.moving = -1;
       newBug.xDir = -1;
     }
     bugs.push(newBug);
   }
-
   //BUG RENDERER / REMOVER
   for(i = 0; i < bugs.length; i++){
     bugs[i].draw();
     if(bugs[i].moving === 0){
       if(bugs[i].frame > 10){
-        console.log(bugs[i].frame);
+        //console.log(bugs[i].frame);
         bugs.splice(i,1);
         i--;
       }
     }
-    else if(bugs[i].frame === 100){
+    else if(bugs[i].frame === 98){
       bugs.splice(i, 1);
       i--;
+      bugMiss++
     }
   }
-  text(splatCount, 10, 10)
+  //UI TEXT
+  textSize(20);
+  text("Bugs splat: "+splatCount, 10, 24);
+  push();
+  textAlign(CENTER);
+  text("Hi Score: "+hiscore, 300, 24);
+  textAlign(RIGHT);
+  text("Missed: "+bugMiss, 590, 24)
+  pop();
+  timer -= deltaTime/1000;
+  push();
+  fill(0,0,0,64);
+  textAlign(CENTER);
+  textSize(128);
+  text(Math.floor(timer), 300, 248);
+  pop();
+  if(timer<0){
+    gameState = "GAMEOVER";
+    //console.log(gameState);
+    first = true;
+  }
 }
 
+//USER INPUT
 function mousePressed(){
-    x = mouseX;
-    y = mouseY;
-    for(i = 0; i < bugs.length; i++){
-      if(bugs[i].moving != 0){
-        if(x > bugs[i].x-16 && x < bugs[i].x+16){
-          if(y > bugs[i].y-16 && y < bugs[i].y+16){
-            console.log("doing splat animation");
-            bugs[i].moving = 0;
-            bugs[i].frame = 0;
-            splatCount++;
+  x = mouseX;
+  y = mouseY;
+  switch(gameState){
+    case "GAME":
+      for(i = 0; i < bugs.length; i++){
+        if(bugs[i].moving != 0){
+          if(x > bugs[i].x-16 && x < bugs[i].x+16){
+            if(y > bugs[i].y-16 && y < bugs[i].y+16){
+              //console.log("doing splat animation");
+              bugs[i].moving = 0;
+              bugs[i].frame = 0;
+              splatCount++;
+              bugRate *= .95; //5% each?
+              if(bugRate < 30){
+                bugRate = 30;
+              }
+            }
           }
         }
       }
+      break;
+    case "TITLE":
+      gameState = "GAME";
+      //console.log(gameState);
+      break;
+    case "GAMEOVER":
+      //rect(200,280,200,32);
+      if((x > 215 && x < 384) && (y > 286 && y < 302)){
+        gameState = "TITLE";
+        //console.log(gameState);
+      }
+      break;
     }
-  }
+ }
 
 class Anim{
   constructor(spriteSheet, numFrames, scl, spriteWidth, spriteHeight, spriteOffsetX, spriteOffsetY){

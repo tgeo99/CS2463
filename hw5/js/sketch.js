@@ -56,7 +56,7 @@ function setup() {
 }
 
 function draw() {
-  //nothing here :)
+  //nothing here :) 
 }
 
 function buttonSound(whichSound) {

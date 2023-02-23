@@ -2,10 +2,10 @@
 // Players -> multiple player obj
 let sound1 = new Tone.Player("sounds/big-hit.wav");
 let sounds = new Tone.Players({
-  "name1": "sounds/big-hit.wav",
-  "name2": "sounds/hey.wav",
-  "name3": "sounds/yo.wav",
-  "name4": "sounds/oh-yeah.wav"
+  "big-hit": "sounds/big-hit.wav",
+  "hey": "sounds/hey.wav",
+  "yo": "sounds/yo.wav",
+  "oh-yeah": "sounds/oh-yeah.wav"
 });
 // input -> effects -> destination
 // sound    processing     speaker
